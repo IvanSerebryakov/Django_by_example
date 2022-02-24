@@ -21,5 +21,15 @@ class Post(Model):
                         on_delete=CASCADE,
                         related_name='blog_posts')
     body = TextField()
-    publish = DateTimeField(default=timezone.now())
+    publish = DateTimeField(default=timezone.localtime().now())
+    created = DateTimeField(auto_now_add=True)
+    updated = DateTimeField(auto_now=True)
+    status = CharField(max_length=10,
+                       choices=STATUS_CHOICES,
+                       default='draft')
 
+    class Meta:
+        ordering = ('-publish',)
+
+    def __str__(self):
+        return self.title
