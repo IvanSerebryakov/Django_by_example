@@ -5,8 +5,17 @@ from django.db.models import (Model,
                               ForeignKey,
                               CASCADE,
                               TextField,
-                              DateTimeField)
+                              DateTimeField,
+                              Manager)
 from django.utils import timezone
+
+
+class PublishedManager(Manager):
+    def get_queryset(self):
+        return (super(PublishedManager,
+                      self)
+                .get_queryset()
+                .filter(status='published'))
 
 
 class Post(Model):
@@ -21,12 +30,14 @@ class Post(Model):
                         on_delete=CASCADE,
                         related_name='blog_posts')
     body = TextField()
-    publish = DateTimeField(default=timezone.localtime().now())
+    publish = DateTimeField(default=timezone.localtime())
     created = DateTimeField(auto_now_add=True)
     updated = DateTimeField(auto_now=True)
     status = CharField(max_length=10,
                        choices=STATUS_CHOICES,
                        default='draft')
+    objects = Manager()
+    published = PublishedManager()
 
     class Meta:
         ordering = ('-publish',)
