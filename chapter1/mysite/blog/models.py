@@ -7,6 +7,7 @@ from django.db.models import (Model,
                               TextField,
                               DateTimeField,
                               Manager)
+from django.urls import reverse
 from django.utils import timezone
 
 
@@ -30,7 +31,7 @@ class Post(Model):
                         on_delete=CASCADE,
                         related_name='blog_posts')
     body = TextField()
-    publish = DateTimeField(default=timezone.localtime())
+    publish = DateTimeField(default=timezone.localdate())
     created = DateTimeField(auto_now_add=True)
     updated = DateTimeField(auto_now=True)
     status = CharField(max_length=10,
@@ -44,3 +45,10 @@ class Post(Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('blog:post_detail',
+                       args=[self.publish.year,
+                             self.publish.month,
+                             self.publish.day,
+                             self.slug])
